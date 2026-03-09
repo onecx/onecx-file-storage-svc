@@ -1,0 +1,137 @@
+[.configuration-legend]
+icon:lock[title=Fixed at build time] Configuration property fixed at build time - All other configuration properties are overridable at runtime
+[.configuration-reference.searchable, cols="80,.^10,.^10"]
+|===
+
+h|[.header-title]##Configuration property##
+h|Type
+h|Default
+
+a| [[onecx-file-storage-svc_onecx-file-storage-bucket]] [.property-path]##link:#onecx-file-storage-svc_onecx-file-storage-bucket[`onecx.file.storage.bucket`]##
+ifdef::add-copy-button-to-config-props[]
+config_property_copy_button:+++onecx.file.storage.bucket+++[]
+endif::add-copy-button-to-config-props[]
+
+
+[.description]
+--
+Bucket name configuration
+
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++ONECX_FILE_STORAGE_BUCKET+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++ONECX_FILE_STORAGE_BUCKET+++`
+endif::add-copy-button-to-env-var[]
+--
+|string
+|`+++onecx+++`
+
+a| [[onecx-file-storage-svc_onecx-file-storage-default-tenant-id]] [.property-path]##link:#onecx-file-storage-svc_onecx-file-storage-default-tenant-id[`onecx.file.storage.default-tenant-id`]##
+ifdef::add-copy-button-to-config-props[]
+config_property_copy_button:+++onecx.file.storage.default-tenant-id+++[]
+endif::add-copy-button-to-config-props[]
+
+
+[.description]
+--
+Default tenant id to be used when tenant id is not provided in the request context
+
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++ONECX_FILE_STORAGE_DEFAULT_TENANT_ID+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++ONECX_FILE_STORAGE_DEFAULT_TENANT_ID+++`
+endif::add-copy-button-to-env-var[]
+--
+|string
+|`+++default+++`
+
+a| [[onecx-file-storage-svc_onecx-file-storage-s3-client-endpoint]] [.property-path]##link:#onecx-file-storage-svc_onecx-file-storage-s3-client-endpoint[`onecx.file.storage.s3-client.endpoint`]##
+ifdef::add-copy-button-to-config-props[]
+config_property_copy_button:+++onecx.file.storage.s3-client.endpoint+++[]
+endif::add-copy-button-to-config-props[]
+
+
+[.description]
+--
+S3 client configuration
+
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++ONECX_FILE_STORAGE_S3_CLIENT_ENDPOINT+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++ONECX_FILE_STORAGE_S3_CLIENT_ENDPOINT+++`
+endif::add-copy-button-to-env-var[]
+--
+|string
+|required icon:exclamation-circle[title=Configuration property is required]
+
+a| [[onecx-file-storage-svc_onecx-file-storage-s3-client-region]] [.property-path]##link:#onecx-file-storage-svc_onecx-file-storage-s3-client-region[`onecx.file.storage.s3-client.region`]##
+ifdef::add-copy-button-to-config-props[]
+config_property_copy_button:+++onecx.file.storage.s3-client.region+++[]
+endif::add-copy-button-to-config-props[]
+
+
+[.description]
+--
+S3 region configuration
+
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++ONECX_FILE_STORAGE_S3_CLIENT_REGION+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++ONECX_FILE_STORAGE_S3_CLIENT_REGION+++`
+endif::add-copy-button-to-env-var[]
+--
+|string
+|required icon:exclamation-circle[title=Configuration property is required]
+
+a| [[onecx-file-storage-svc_onecx-file-storage-s3-client-access-key-id]] [.property-path]##link:#onecx-file-storage-svc_onecx-file-storage-s3-client-access-key-id[`onecx.file.storage.s3-client.access-key-id`]##
+ifdef::add-copy-button-to-config-props[]
+config_property_copy_button:+++onecx.file.storage.s3-client.access-key-id+++[]
+endif::add-copy-button-to-config-props[]
+
+
+[.description]
+--
+S3 access key configuration
+
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++ONECX_FILE_STORAGE_S3_CLIENT_ACCESS_KEY_ID+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++ONECX_FILE_STORAGE_S3_CLIENT_ACCESS_KEY_ID+++`
+endif::add-copy-button-to-env-var[]
+--
+|string
+|required icon:exclamation-circle[title=Configuration property is required]
+
+a| [[onecx-file-storage-svc_onecx-file-storage-s3-client-secret-access-key]] [.property-path]##link:#onecx-file-storage-svc_onecx-file-storage-s3-client-secret-access-key[`onecx.file.storage.s3-client.secret-access-key`]##
+ifdef::add-copy-button-to-config-props[]
+config_property_copy_button:+++onecx.file.storage.s3-client.secret-access-key+++[]
+endif::add-copy-button-to-config-props[]
+
+
+[.description]
+--
+S3 secret key configuration
+
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++ONECX_FILE_STORAGE_S3_CLIENT_SECRET_ACCESS_KEY+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++ONECX_FILE_STORAGE_S3_CLIENT_SECRET_ACCESS_KEY+++`
+endif::add-copy-button-to-env-var[]
+--
+|string
+|required icon:exclamation-circle[title=Configuration property is required]
+
+|===
+

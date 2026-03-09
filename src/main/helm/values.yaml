@@ -1,0 +1,11 @@
+app:
+  name: svc
+  image:
+    repository: "onecx/onecx-file-storage-svc"
+  db:
+    enabled: true
+  operator:
+    microservice:
+      spec:
+        description: OneCX File Storage Backend Service
+        name: OneCX File Storage SVC

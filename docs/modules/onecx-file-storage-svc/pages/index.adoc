@@ -1,0 +1,9 @@
+include::onecx-file-storage-svc-attributes.adoc[opts=optional]
+
+= onecx-file-storage-svc
+
+
+== Configuration
+include::onecx-file-storage-svc.adoc[opts=optional]
+
+include::onecx-file-storage-svc-docs.adoc[opts=optional]

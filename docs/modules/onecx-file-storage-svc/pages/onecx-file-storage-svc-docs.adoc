@@ -1,0 +1,53 @@
+
+include::onecx-file-storage-svc-attributes.adoc[opts=optional]
+
+{docker-registry}[Link to Docker registry]
+
+== Default properties
+
+.{properties-file}
+[%collapsible]
+====
+[source,properties,subs=attributes+]
+----
+quarkus.http.auth.permission.health.paths=/q/*
+quarkus.http.auth.permission.health.policy=permit
+quarkus.http.auth.permission.default.paths=/*
+quarkus.http.auth.permission.default.policy=authenticated
+quarkus.s3.aws.credentials.type=static
+quarkus.s3.aws.credentials.static-provider.access-key-id=${onecx.file.storage.s3-client.access-key-id}
+quarkus.s3.aws.credentials.static-provider.secret-access-key=${onecx.file.storage.s3-client.secret-access-key}
+quarkus.s3.endpoint-override=${onecx.file.storage.s3-client.endpoint}
+quarkus.s3.aws.region=${onecx.file.storage.s3-client.region}
+quarkus.openapi-generator.codegen.input-base-dir=target/tmp/openapi
+%prod.quarkus.oidc-client.client-id=${quarkus.application.name}
+----
+====
+
+== Extensions
+.Extensions List
+[%collapsible]
+====
+include::onecx-file-storage-svc-extensions.adoc[opts=optional]
+====
+
+== Helm
+
+{helm-registry}[Link to Helm registry]
+
+.Default values in {helm-file}
+[source,yaml]
+----
+app:
+  name: svc
+  image:
+    repository: "onecx/onecx-file-storage-svc"
+  db:
+    enabled: true
+  operator:
+    microservice:
+      spec:
+        description: OneCX File Storage Backend Service
+        name: OneCX File Storage SVC
+
+----

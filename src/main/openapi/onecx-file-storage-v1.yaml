@@ -1,0 +1,245 @@
+---
+openapi: 3.0.3
+info:
+  title: onecx-file-storage-svc
+  version: "1.0"
+servers:
+  - url: http://onecx-file-storage-svc:8080/
+tags:
+  - name: fileStorage
+    description: Upload and download files
+paths:
+  /v1/file-storage/presigned/upload:
+    post:
+      security:
+        - oauth2: [ ocx-fs:write ]
+      tags:
+        - fileStorage
+      description: Get presigned upload url
+      operationId: getPresignedUploadUrl
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PresignedUrlRequest'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresignedUrlResponse'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailResponse'
+  /v1/file-storage/file/upload:
+    post:
+      security:
+        - oauth2: [ ocx-fs:write ]
+      tags:
+        - fileStorage
+      description: Directly upload a file using multipart form
+      operationId: uploadFile
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FileUploadRequest'
+      responses:
+        "201":
+          description: File uploaded successfully
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailResponse'
+  /v1/file-storage/file/download:
+    post:
+      security:
+        - oauth2: [ ocx-fs:read ]
+      tags:
+        - fileStorage
+      description: Directly download a file
+      operationId: downloadFile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FileDownloadRequest'
+      responses:
+        "200":
+          description: File content
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: File not found
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailResponse'
+  /v1/file-storage/file/delete:
+    post:
+      security:
+        - oauth2: [ ocx-fs:delete ]
+      tags:
+        - fileStorage
+      description: Delete a file by file name, application id and product name
+      operationId: deleteFile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FileDeleteRequest'
+      responses:
+        "200":
+          description: File deleted successfully
+        "404":
+          description: File not found
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailResponse'
+  /v1/file-storage/presigned/download:
+    post:
+      security:
+        - oauth2: [ ocx-fs:read ]
+      tags:
+        - fileStorage
+      description: Get presigned download url
+      operationId: getPresignedDownloadUrl
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PresignedUrlRequest'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresignedUrlResponse'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailResponse'
+components:
+  schemas:
+    FileDeleteRequest:
+      type: object
+      required:
+        - fileName
+        - applicationId
+        - productName
+      properties:
+        applicationId:
+          type: string
+        productName:
+          type: string
+        fileName:
+          type: string
+          description: Unique identifier of the file to delete
+    FileUploadRequest:
+      type: object
+      required:
+        - fileName
+        - file
+        - applicationId
+        - productName
+      properties:
+        applicationId:
+          type: string
+        productName:
+          type: string
+        fileName:
+          type: string
+          description: Unique identifier for the file
+        file:
+          type: string
+          format: binary
+          description: File content to upload
+    PresignedUrlResponse:
+      type: object
+      properties:
+        url:
+          type: string
+        expiration:
+          $ref: '#/components/schemas/OffsetDateTime'
+    PresignedUrlRequest:
+      type: object
+      required:
+        - fileName
+        - productName
+        - applicationId
+      properties:
+        applicationId:
+          type: string
+        productName:
+          type: string
+        fileName:
+          type: string
+    FileDownloadRequest:
+      type: object
+      required:
+        - fileName
+        - applicationId
+        - productName
+      properties:
+        applicationId:
+          type: string
+        productName:
+          type: string
+        fileName:
+          type: string
+          description: Unique identifier of the file to download
+    ProblemDetailResponse:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        detail:
+          type: string
+        params:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProblemDetailParam'
+        invalidParams:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProblemDetailInvalidParam'
+    ProblemDetailParam:
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+    ProblemDetailInvalidParam:
+      type: object
+      properties:
+        name:
+          type: string
+        message:
+          type: string
+    OffsetDateTime:
+      format: date-time
+      type: string
+      example: 2022-03-10T12:15:50-04:00
