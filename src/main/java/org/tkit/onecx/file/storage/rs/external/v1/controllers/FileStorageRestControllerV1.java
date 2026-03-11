@@ -40,7 +40,7 @@ public class FileStorageRestControllerV1 implements FileStorageV1Api {
     }
 
     @Override
-    public Response uploadFile(String productName, String applicationId, String fileId, InputStream file) {
+    public Response uploadFile(String applicationId, String productName, String fileId, InputStream file) {
         try {
             s3APIService.uploadFile(fileId, file, productName, applicationId);
             return Response.status(Response.Status.CREATED).build();
