@@ -114,6 +114,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetailResponse'
+  /v1/file-storage/file/metadata:
+    post:
+      security:
+        - oauth2: [ ocx-fs:read ]
+      tags:
+        - fileStorage
+      operationId: getMetadataForFiles
+      description: Get metadata for multiple files
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/FileMetadataRequest'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FileMetadataResponse'
   /v1/file-storage/presigned/download:
     post:
       security:
@@ -220,6 +245,27 @@ components:
         fileName:
           type: string
           description: Unique identifier of the file to download
+    FileMetadataRequest:
+      type: object
+      properties:
+        productName:
+          type: string
+        applicationId:
+          type: string
+        fileName:
+          type: string
+    FileMetadataResponse:
+      type: object
+      properties:
+        size:
+          type: integer
+          format: int64
+        sizeUnit:
+          type: string
+        storage:
+          type: string
+        type:
+          type: string
     ProblemDetailResponse:
       type: object
       properties:

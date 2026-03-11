@@ -1,6 +1,7 @@
 package org.tkit.onecx.file.storage.rs.external.v1.controllers;
 
 import java.io.InputStream;
+import java.util.List;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -13,6 +14,7 @@ import org.tkit.onecx.file.storage.rs.external.v1.services.S3APIService;
 import gen.org.tkit.onecx.file.storage.rs.external.v1.FileStorageV1Api;
 import gen.org.tkit.onecx.file.storage.rs.external.v1.model.FileDeleteRequestDTOV1;
 import gen.org.tkit.onecx.file.storage.rs.external.v1.model.FileDownloadRequestDTOV1;
+import gen.org.tkit.onecx.file.storage.rs.external.v1.model.FileMetadataRequestDTOV1;
 import gen.org.tkit.onecx.file.storage.rs.external.v1.model.PresignedUrlRequestDTOV1;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
@@ -80,5 +82,10 @@ public class FileStorageRestControllerV1 implements FileStorageV1Api {
                     .entity(e.getMessage())
                     .build();
         }
+    }
+
+    @Override
+    public Response getMetadataForFiles(List<FileMetadataRequestDTOV1> metadataRequests) {
+        return Response.ok(s3APIService.getMetadataForFiles(metadataRequests)).build();
     }
 }

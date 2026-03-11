@@ -6,6 +6,7 @@ import java.net.URLConnection;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -13,9 +14,12 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.tkit.onecx.file.storage.rs.external.v1.mappers.MetadataMapper;
 import org.tkit.onecx.file.storage.rs.external.v1.mappers.PresignedUrlMapper;
 import org.tkit.quarkus.context.ApplicationContext;
 
+import gen.org.tkit.onecx.file.storage.rs.external.v1.model.FileMetadataRequestDTOV1;
+import gen.org.tkit.onecx.file.storage.rs.external.v1.model.FileMetadataResponseDTOV1;
 import gen.org.tkit.onecx.file.storage.rs.external.v1.model.PresignedUrlResponseDTOV1;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.exception.SdkException;
@@ -44,7 +48,10 @@ public class S3APIService {
     S3Presigner presigner;
 
     @Inject
-    PresignedUrlMapper mapper;
+    PresignedUrlMapper urlMapper;
+
+    @Inject
+    MetadataMapper metadataMapper;
 
     @PostConstruct
     void onInit() {
@@ -68,7 +75,7 @@ public class S3APIService {
                 .build();
 
         PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(presignRequest);
-        return mapper.map(presignedRequest.url().toExternalForm(),
+        return urlMapper.map(presignedRequest.url().toExternalForm(),
                 OffsetDateTime.ofInstant(presignedRequest.expiration(), ZoneOffset.UTC));
     }
 
@@ -87,7 +94,7 @@ public class S3APIService {
                 .build();
 
         PresignedPutObjectRequest presignedRequest = presigner.presignPutObject(presignRequest);
-        return mapper.map(presignedRequest.url().toExternalForm(),
+        return urlMapper.map(presignedRequest.url().toExternalForm(),
                 OffsetDateTime.ofInstant(presignedRequest.expiration(), ZoneOffset.UTC));
     }
 
@@ -135,6 +142,14 @@ public class S3APIService {
         return s3Client.getObject(getObjectRequest);
     }
 
+    public List<FileMetadataResponseDTOV1> getMetadataForFiles(final List<FileMetadataRequestDTOV1> metadataRequests) {
+        final var tenantId = ApplicationContext.get().hasTenantId() ? ApplicationContext.get().getTenantId() : defaultTenantId;
+        final var headResponses = metadataRequests.stream()
+                .map(request -> processHeadObject(tenantId, request))
+                .toList();
+        return headResponses.stream().map(metadataMapper::map).toList();
+    }
+
     private String buildFilePath(String tenantId, String productName, String applicationId, String fileName) {
         return tenantId + "/" + productName + "/" + applicationId + "/" + fileName;
     }
@@ -155,4 +170,21 @@ public class S3APIService {
         }
     }
 
+    private HeadObjectResponse processHeadObject(final String tenantId, final FileMetadataRequestDTOV1 request) {
+        final var fileName = buildFilePath(tenantId, request.getProductName(), request.getApplicationId(),
+                request.getFileName());
+        final var headRequest = getHeadObjectRequest(fileName);
+        try {
+            return s3Client.headObject(headRequest);
+        } catch (Exception e) {
+            throw new WebApplicationException("Error retrieve file " + fileName);
+        }
+    }
+
+    private HeadObjectRequest getHeadObjectRequest(final String fileName) {
+        return HeadObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fileName)
+                .build();
+    }
 }
