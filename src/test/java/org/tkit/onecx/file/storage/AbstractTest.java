@@ -1,5 +1,6 @@
 package org.tkit.onecx.file.storage;
 
+import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,10 +23,16 @@ public abstract class AbstractTest {
 
     public KeycloakTestClient keycloakClient = new KeycloakTestClient();
 
-    protected static final String APM_HEADER_PARAM = ConfigProvider.getConfig()
-            .getValue("%test.tkit.rs.context.token.header-param", String.class);
-    protected static final String CLAIMS_ORG_ID = ConfigProvider.getConfig()
-            .getValue("%test.tkit.rs.context.tenant-id.mock.claim-org-id", String.class);
+    protected static final String APM_HEADER_PARAM;
+    protected static final String CLAIMS_ORG_ID;
+
+    static {
+        Config cfg = ConfigProvider.getConfig();
+        APM_HEADER_PARAM = cfg.getOptionalValue("%test.tkit.rs.context.token.header-param", String.class)
+                .orElse("apm-principal-token");
+        CLAIMS_ORG_ID = cfg.getOptionalValue("%test.tkit.rs.context.tenant-id.mock.claim-org-id", String.class)
+                .orElse("orgId");
+    }
 
     static {
         RestAssured.config = RestAssuredConfig.config().objectMapperConfig(

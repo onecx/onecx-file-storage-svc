@@ -84,6 +84,13 @@
             <artifactId>url-connection-client</artifactId>
             <version>2.41.18</version>
         </dependency>
+        <!-- DEV SERVICES S3 (LocalStack) -->
+        <dependency>
+            <groupId>io.quarkiverse.amazonservices</groupId>
+            <artifactId>quarkus-amazon-s3-deployment</artifactId>
+            <version>3.14.1</version>
+            <scope>test</scope>
+        </dependency>
         <!-- DEV -->
         <dependency>
             <groupId>io.quarkiverse.mockserver</groupId>

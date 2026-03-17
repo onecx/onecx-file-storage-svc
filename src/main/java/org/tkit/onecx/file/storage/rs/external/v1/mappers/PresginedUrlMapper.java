@@ -1,5 +1,7 @@
 package org.tkit.onecx.file.storage.rs.external.v1.mappers;
 
+import java.time.OffsetDateTime;
+
 import org.mapstruct.Mapper;
 import org.tkit.quarkus.rs.mappers.OffsetDateTimeMapper;
 
@@ -8,5 +10,5 @@ import gen.org.tkit.onecx.file.storage.rs.external.v1.model.PresignedUrlResponse
 @Mapper(uses = OffsetDateTimeMapper.class)
 public interface PresginedUrlMapper {
 
-    PresignedUrlResponseDTOV1 map(String url, String expiration);
+    PresignedUrlResponseDTOV1 map(String url, OffsetDateTime expiration);
 }

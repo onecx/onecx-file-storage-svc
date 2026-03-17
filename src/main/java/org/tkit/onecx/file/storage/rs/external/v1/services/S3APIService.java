@@ -4,6 +4,8 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.URLConnection;
 import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -66,7 +68,8 @@ public class S3APIService {
                 .build();
 
         PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(presignRequest);
-        return mapper.map(presignedRequest.url().toExternalForm(), presignedRequest.expiration().toString());
+        return mapper.map(presignedRequest.url().toExternalForm(),
+                OffsetDateTime.ofInstant(presignedRequest.expiration(), ZoneOffset.UTC));
     }
 
     public PresignedUrlResponseDTOV1 getPresignedUploadUrl(String id, String productName, String applicationId) {
@@ -84,7 +87,8 @@ public class S3APIService {
                 .build();
 
         PresignedPutObjectRequest presignedRequest = presigner.presignPutObject(presignRequest);
-        return mapper.map(presignedRequest.url().toExternalForm(), presignedRequest.expiration().toString());
+        return mapper.map(presignedRequest.url().toExternalForm(),
+                OffsetDateTime.ofInstant(presignedRequest.expiration(), ZoneOffset.UTC));
     }
 
     public boolean bucketExists(String bucket) {
