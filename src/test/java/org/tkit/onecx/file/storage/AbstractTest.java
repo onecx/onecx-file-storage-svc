@@ -1,20 +1,25 @@
 package org.tkit.onecx.file.storage;
 
+import java.security.PrivateKey;
+
+import jakarta.json.Json;
+import jakarta.json.JsonObjectBuilder;
+
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
+import org.eclipse.microprofile.jwt.Claims;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import io.quarkiverse.mockserver.test.MockServerTestResource;
-import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.keycloak.client.KeycloakTestClient;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
+import io.smallrye.jwt.build.Jwt;
+import io.smallrye.jwt.util.KeyUtils;
 
-@QuarkusTestResource(MockServerTestResource.class)
 public abstract class AbstractTest {
 
     protected static final String ADMIN = "alice";
@@ -28,10 +33,8 @@ public abstract class AbstractTest {
 
     static {
         Config cfg = ConfigProvider.getConfig();
-        APM_HEADER_PARAM = cfg.getOptionalValue("%test.tkit.rs.context.token.header-param", String.class)
-                .orElse("apm-principal-token");
-        CLAIMS_ORG_ID = cfg.getOptionalValue("%test.tkit.rs.context.tenant-id.mock.claim-org-id", String.class)
-                .orElse("orgId");
+        APM_HEADER_PARAM = cfg.getValue("%test.tkit.rs.context.token.header-param", String.class);
+        CLAIMS_ORG_ID = cfg.getValue("%test.tkit.rs.context.tenant-id.mock.claim-org-id", String.class);
     }
 
     static {
@@ -43,6 +46,24 @@ public abstract class AbstractTest {
                             objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
                             return objectMapper;
                         }));
+    }
+
+    protected static String createToken(String organizationId) {
+        try {
+
+            String userName = "test-user";
+            JsonObjectBuilder claims = Json.createObjectBuilder();
+            claims.add(Claims.preferred_username.name(), userName);
+            claims.add(Claims.sub.name(), userName);
+            if (organizationId != null) {
+                claims.add(CLAIMS_ORG_ID, organizationId);
+            }
+
+            PrivateKey privateKey = KeyUtils.generateKeyPair(2048).getPrivate();
+            return Jwt.claims(claims.build()).sign(privateKey);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
 }

@@ -14,11 +14,11 @@ quarkus.http.auth.permission.health.paths=/q/*
 quarkus.http.auth.permission.health.policy=permit
 quarkus.http.auth.permission.default.paths=/*
 quarkus.http.auth.permission.default.policy=authenticated
-quarkus.s3.aws.credentials.type=static
-quarkus.s3.aws.credentials.static-provider.access-key-id=${onecx.file.storage.s3-client.access-key-id}
-quarkus.s3.aws.credentials.static-provider.secret-access-key=${onecx.file.storage.s3-client.secret-access-key}
-quarkus.s3.endpoint-override=${onecx.file.storage.s3-client.endpoint}
-quarkus.s3.aws.region=${onecx.file.storage.s3-client.region}
+%prod.quarkus.s3.aws.credentials.type=static
+%prod.quarkus.s3.aws.credentials.static-provider.access-key-id=${onecx.file.storage.s3-client.access-key-id}
+%prod.quarkus.s3.aws.credentials.static-provider.secret-access-key=${onecx.file.storage.s3-client.secret-access-key}
+%prod.quarkus.s3.endpoint-override=${onecx.file.storage.s3-client.endpoint}
+%prod.quarkus.s3.aws.region=${onecx.file.storage.s3-client.region}
 quarkus.openapi-generator.codegen.input-base-dir=target/tmp/openapi
 %prod.quarkus.oidc-client.client-id=${quarkus.application.name}
 ----

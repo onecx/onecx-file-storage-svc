@@ -2,102 +2,99 @@ package org.tkit.onecx.file.storage.rs.external.v1.controllers;
 
 import static io.restassured.RestAssured.given;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
 
-import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 
 import jakarta.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.tkit.onecx.file.storage.AbstractTest;
-import org.tkit.onecx.file.storage.rs.external.v1.services.S3APIService;
+import org.tkit.quarkus.security.test.GenerateKeycloakClient;
 
 import gen.org.tkit.onecx.file.storage.rs.external.v1.model.FileDownloadRequestDTOV1;
-import gen.org.tkit.onecx.file.storage.rs.external.v1.model.PresignedUrlResponseDTOV1;
-import io.quarkus.test.InjectMock;
+import gen.org.tkit.onecx.file.storage.rs.external.v1.model.PresignedUrlRequestDTOV1;
 import io.quarkus.test.junit.QuarkusTest;
-import software.amazon.awssdk.core.ResponseInputStream;
-import software.amazon.awssdk.http.AbortableInputStream;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 
 @QuarkusTest
+@GenerateKeycloakClient(clientName = "testClient", scopes = { "ocx-fs:read", "ocx-fs:write", "ocx-fs:delete" })
 class FileStorageRestControllerV1Test extends AbstractTest {
 
-    @InjectMock
-    S3APIService s3APIService;
-
     String token;
+    String idToken;
 
     @BeforeEach
     void setup() {
-        org.mockito.Mockito.reset(s3APIService);
-        token = keycloakClient.getAccessToken(ADMIN);
+        token = keycloakClient.getClientAccessToken("testClient");
+        idToken = createToken("org1");
     }
 
     @Test
-    void downloadFileTest() {
-        byte[] fileContent = "onecx content".getBytes();
-        GetObjectResponse metadata = GetObjectResponse.builder()
-                .contentType(MediaType.TEXT_PLAIN)
-                .contentLength((long) fileContent.length)
-                .build();
+    void uploadAndDownloadFileTest() {
+        byte[] fileContent = "onecx file content".getBytes(StandardCharsets.UTF_8);
 
-        ResponseInputStream<GetObjectResponse> responseInputStream = new ResponseInputStream<>(
-                metadata,
-                AbortableInputStream.create(new ByteArrayInputStream(fileContent)));
+        given()
+                .auth().oauth2(token)
+                .header(APM_HEADER_PARAM, idToken)
+                .multiPart("applicationId", "app1")
+                .multiPart("productName", "product1")
+                .multiPart("fileName", "my-file.txt")
+                .multiPart("file", "my-file.txt", fileContent, "application/octet-stream")
+                .when()
+                .post("/v1/file-storage/file/upload")
+                .then()
+                .statusCode(201);
 
-        when(s3APIService.downloadFile(anyString(), anyString(), anyString()))
-                .thenReturn(responseInputStream);
+        FileDownloadRequestDTOV1 request = new FileDownloadRequestDTOV1();
+        request.setFileName("my-file.txt");
+        request.setProductName("product1");
+        request.setApplicationId("app1");
 
-        byte[] response = given()
+        given()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body("""
-                        {
-                          "fileName": "test-file.txt",
-                          "productName": "product1",
-                          "applicationId": "app1"
-                        }
-                        """)
+                .body(request)
                 .when()
                 .auth().oauth2(token)
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(APM_HEADER_PARAM, idToken)
                 .contentType(APPLICATION_JSON)
                 .post("/v1/file-storage/file/download")
                 .then()
                 .statusCode(200)
-                .contentType(MediaType.TEXT_PLAIN)
+                .contentType("application/octet-stream")
                 .extract()
                 .asByteArray();
+    }
 
-        assertThat(response).isEqualTo(fileContent);
+    @Test
+    void uploadFileBadRequestTest() throws Exception {
+        byte[] fileContent = "onecx file content".getBytes();
+
+        given()
+                .auth().oauth2(token)
+                .header(APM_HEADER_PARAM, idToken)
+                .multiPart("applicationId", "app1")
+                .multiPart("productName", "product1")
+                .multiPart("fileName", "my-file.txt")
+                .when()
+                .post("/v1/file-storage/file/upload")
+                .then()
+                .statusCode(400);
     }
 
     @Test
     void downloadFileNotFoundTest() {
-        when(s3APIService.downloadFile(anyString(), anyString(), anyString()))
-                .thenThrow(NoSuchKeyException.builder()
-                        .message("The specified key does not exist.")
-                        .build());
+
+        FileDownloadRequestDTOV1 request = new FileDownloadRequestDTOV1();
+        request.setFileName("test-file.txt");
+        request.setProductName("product1");
+        request.setApplicationId("app1");
 
         given()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body("""
-                        {
-                          "fileName": "missing-file.txt",
-                          "productName": "product1",
-                          "applicationId": "app1"
-                        }
-                        """)
+                .body(request)
                 .when()
                 .auth().oauth2(token)
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(APM_HEADER_PARAM, idToken)
                 .contentType(APPLICATION_JSON)
                 .post("/v1/file-storage/file/download")
                 .then()
@@ -106,63 +103,19 @@ class FileStorageRestControllerV1Test extends AbstractTest {
 
     @Test
     void downloadFileGeneralExceptionTest() {
-        when(s3APIService.downloadFile(anyString(), anyString(), anyString()))
-                .thenThrow(new RuntimeException("Unexpected S3 error"));
+
+        FileDownloadRequestDTOV1 request = new FileDownloadRequestDTOV1();
+        request.setProductName("product1");
+        request.setApplicationId("app1");
 
         given()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body("""
-                        {
-                          "fileName": "error-file.txt",
-                          "productName": "product1",
-                          "applicationId": "app1"
-                        }
-                        """)
+                .body(request)
                 .when()
                 .auth().oauth2(token)
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(APM_HEADER_PARAM, idToken)
                 .contentType(APPLICATION_JSON)
                 .post("/v1/file-storage/file/download")
-                .then()
-                .statusCode(400);
-    }
-
-    @Test
-    void uploadFileTest() throws Exception {
-        byte[] fileContent = "onecx file content".getBytes();
-
-        doNothing().when(s3APIService).uploadFile(anyString(), any(), anyString(), anyString());
-
-        given()
-                .auth().oauth2(token)
-                .header(APM_HEADER_PARAM, ADMIN)
-                .multiPart("applicationId", "app1")
-                .multiPart("productName", "product1")
-                .multiPart("fileName", "my-file.txt")
-                .multiPart("file", fileContent)
-                .when()
-                .post("/v1/file-storage/file/upload")
-                .then()
-                .statusCode(201);
-
-    }
-
-    @Test
-    void uploadFileBadRequestTest() throws Exception {
-        byte[] fileContent = "onecx file content".getBytes();
-
-        doThrow(new RuntimeException("Failed to upload file"))
-                .when(s3APIService).uploadFile(anyString(), any(), anyString(), anyString());
-
-        given()
-                .auth().oauth2(token)
-                .header(APM_HEADER_PARAM, ADMIN)
-                .multiPart("applicationId", "app1")
-                .multiPart("productName", "product1")
-                .multiPart("fileName", "my-file.txt")
-                .multiPart("file", fileContent)
-                .when()
-                .post("/v1/file-storage/file/upload")
                 .then()
                 .statusCode(400);
     }
@@ -174,13 +127,11 @@ class FileStorageRestControllerV1Test extends AbstractTest {
         request.setProductName("product1");
         request.setApplicationId("app1");
 
-        doNothing().when(s3APIService).deleteFile(anyString(), anyString(), anyString());
-
         given().contentType(MediaType.APPLICATION_JSON)
                 .body(request)
                 .when()
                 .auth().oauth2(token)
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(APM_HEADER_PARAM, idToken)
                 .contentType(APPLICATION_JSON)
                 .post("/v1/file-storage/file/delete")
                 .then()
@@ -190,24 +141,18 @@ class FileStorageRestControllerV1Test extends AbstractTest {
 
     @Test
     void getPresignedUploadUrlTest() {
-        PresignedUrlResponseDTOV1 presignedUrlResponseDTOV1 = new PresignedUrlResponseDTOV1();
-        presignedUrlResponseDTOV1.setUrl("https://presigned-upload-url.com");
 
-        when(s3APIService.getPresignedUploadUrl(anyString(), anyString(), anyString()))
-                .thenReturn(presignedUrlResponseDTOV1);
+        PresignedUrlRequestDTOV1 request = new PresignedUrlRequestDTOV1();
+        request.setFileName("test-file.txt");
+        request.setProductName("product1");
+        request.setApplicationId("app1");
 
         given()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body("""
-                        {
-                        "fileName": "test-file.txt",
-                        "productName": "product1",
-                        "applicationId": "app1"
-                        }
-                        """)
+                .body(request)
                 .when()
                 .auth().oauth2(token)
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(APM_HEADER_PARAM, idToken)
                 .contentType(APPLICATION_JSON)
                 .post("/v1/file-storage/presigned/upload")
                 .then()
@@ -216,24 +161,17 @@ class FileStorageRestControllerV1Test extends AbstractTest {
 
     @Test
     void getPresignedDownloadUrlTest() {
-        PresignedUrlResponseDTOV1 presignedUrlResponseDTOV1 = new PresignedUrlResponseDTOV1();
-        presignedUrlResponseDTOV1.setUrl("https://presigned-download-url.com");
-
-        when(s3APIService.getPresignedDownloadUrl(anyString(), anyString(), anyString()))
-                .thenReturn(presignedUrlResponseDTOV1);
+        PresignedUrlRequestDTOV1 request = new PresignedUrlRequestDTOV1();
+        request.setFileName("test-file.txt");
+        request.setProductName("product1");
+        request.setApplicationId("app1");
 
         given()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body("""
-                        {
-                        "fileName": "test-file.txt",
-                        "productName": "product1",
-                        "applicationId": "app1"
-                        }
-                        """)
+                .body(request)
                 .when()
                 .auth().oauth2(token)
-                .header(APM_HEADER_PARAM, ADMIN)
+                .header(APM_HEADER_PARAM, idToken)
                 .contentType(APPLICATION_JSON)
                 .post("/v1/file-storage/presigned/download")
                 .then()

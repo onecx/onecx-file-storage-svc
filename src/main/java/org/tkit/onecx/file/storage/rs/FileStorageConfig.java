@@ -41,28 +41,24 @@ public interface FileStorageConfig {
          * S3 client configuration
          */
         @WithName("endpoint")
-        @WithDefault("")
         String endpointUrl();
 
         /**
          * S3 region configuration
          */
         @WithName("region")
-        @WithDefault("")
         String region();
 
         /**
          * S3 access key configuration
          */
         @WithName("access-key-id")
-        @WithDefault("")
         String accessKeyId();
 
         /**
          * S3 secret key configuration
          */
         @WithName("secret-access-key")
-        @WithDefault("")
         String secretAccessKey();
     }
 

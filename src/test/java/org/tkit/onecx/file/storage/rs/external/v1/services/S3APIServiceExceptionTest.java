@@ -11,6 +11,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.tkit.onecx.file.storage.AbstractTest;
+import org.tkit.onecx.file.storage.rs.external.v1.controllers.FileStorageRestControllerV1;
 import org.tkit.quarkus.context.ApplicationContext;
 import org.tkit.quarkus.context.Context;
 
@@ -24,6 +25,9 @@ class S3APIServiceExceptionTest extends AbstractTest {
 
     @Inject
     S3APIService s3APIService;
+
+    @Inject
+    FileStorageRestControllerV1 fileStorageRestControllerV1;
 
     @InjectMock
     S3Client s3Client;
