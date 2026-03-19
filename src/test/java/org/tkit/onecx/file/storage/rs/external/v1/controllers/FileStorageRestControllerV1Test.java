@@ -2,8 +2,10 @@ package org.tkit.onecx.file.storage.rs.external.v1.controllers;
 
 import static io.restassured.RestAssured.given;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.hamcrest.Matchers.*;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import jakarta.ws.rs.core.MediaType;
 
@@ -13,6 +15,7 @@ import org.tkit.onecx.file.storage.AbstractTest;
 import org.tkit.quarkus.security.test.GenerateKeycloakClient;
 
 import gen.org.tkit.onecx.file.storage.rs.external.v1.model.FileDownloadRequestDTOV1;
+import gen.org.tkit.onecx.file.storage.rs.external.v1.model.FileMetadataRequestDTOV1;
 import gen.org.tkit.onecx.file.storage.rs.external.v1.model.PresignedUrlRequestDTOV1;
 import io.quarkus.test.junit.QuarkusTest;
 
@@ -156,6 +159,60 @@ class FileStorageRestControllerV1Test extends AbstractTest {
                 .post("/v1/file-storage/presigned/upload")
                 .then()
                 .statusCode(200);
+    }
+
+    @Test
+    void getMetadataForFilesTest() {
+        byte[] fileContent = "onecx file content".getBytes(StandardCharsets.UTF_8);
+
+        given()
+                .auth().oauth2(token)
+                .header(APM_HEADER_PARAM, idToken)
+                .multiPart("applicationId", "app1")
+                .multiPart("productName", "product1")
+                .multiPart("fileName", "my-file.txt")
+                .multiPart("file", "my-file.txt", fileContent, "application/octet-stream")
+                .when()
+                .post("/v1/file-storage/file/upload")
+                .then()
+                .statusCode(201);
+
+        FileMetadataRequestDTOV1 request = new FileMetadataRequestDTOV1();
+        request.setFileName("my-file.txt");
+        request.setProductName("product1");
+        request.setApplicationId("app1");
+
+        given()
+                .auth().oauth2(token)
+                .header(APM_HEADER_PARAM, idToken)
+                .contentType(APPLICATION_JSON)
+                .body(List.of(request))
+                .when()
+                .post("/v1/file-storage/file/metadata")
+                .then()
+                .statusCode(200)
+                .body("size()", equalTo(1))
+                .body("[0].fileName", equalTo("my-file.txt"))
+                .body("[0].size", notNullValue())
+                .body("[0].type", notNullValue());
+    }
+
+    @Test
+    void getMetadataForFilesNotFoundTest() {
+        FileMetadataRequestDTOV1 request = new FileMetadataRequestDTOV1();
+        request.setFileName("non-existent-file.txt");
+        request.setProductName("product1");
+        request.setApplicationId("app1");
+
+        given()
+                .auth().oauth2(token)
+                .header(APM_HEADER_PARAM, idToken)
+                .contentType(APPLICATION_JSON)
+                .body(List.of(request))
+                .when()
+                .post("/v1/file-storage/file/metadata")
+                .then()
+                .statusCode(500);
     }
 
     @Test
