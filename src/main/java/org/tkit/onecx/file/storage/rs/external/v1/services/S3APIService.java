@@ -11,9 +11,9 @@ import java.util.List;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.WebApplicationException;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.resteasy.reactive.ClientWebApplicationException;
 import org.tkit.onecx.file.storage.rs.external.v1.mappers.MetadataMapper;
 import org.tkit.onecx.file.storage.rs.external.v1.mappers.PresignedUrlMapper;
 import org.tkit.quarkus.context.ApplicationContext;
@@ -105,7 +105,7 @@ public class S3APIService {
         } catch (NoSuchBucketException e) {
             return false;
         } catch (SdkException ex) {
-            throw new WebApplicationException("Error checking bucket existence: " + ex.getMessage(), ex);
+            throw new ClientWebApplicationException("Error checking bucket existence: " + ex.getMessage(), ex);
         }
     }
 
@@ -165,7 +165,7 @@ public class S3APIService {
 
             s3Client.deleteObject(deleteObjectRequest);
         } catch (SdkException ex) {
-            throw new WebApplicationException("Error deleting file: " + ex.getMessage(), ex);
+            throw new ClientWebApplicationException("Error deleting file: " + ex.getMessage(), ex);
         }
     }
 
@@ -177,7 +177,7 @@ public class S3APIService {
             final var headObject = s3Client.headObject(headRequest);
             return metadataMapper.map(headObject, request.getFileName());
         } catch (Exception e) {
-            throw new WebApplicationException("Error retrieve file " + fileName);
+            throw new ClientWebApplicationException("Error retrieve file " + fileName);
         }
     }
 

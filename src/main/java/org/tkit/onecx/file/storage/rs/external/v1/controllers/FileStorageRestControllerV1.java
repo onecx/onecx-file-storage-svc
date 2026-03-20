@@ -9,6 +9,9 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
+import org.jboss.resteasy.reactive.ClientWebApplicationException;
+import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
+import org.tkit.onecx.file.storage.rs.external.v1.mappers.ExceptionMapper;
 import org.tkit.onecx.file.storage.rs.external.v1.services.S3APIService;
 
 import gen.org.tkit.onecx.file.storage.rs.external.v1.FileStorageV1Api;
@@ -26,6 +29,9 @@ public class FileStorageRestControllerV1 implements FileStorageV1Api {
 
     @Inject
     S3APIService s3APIService;
+
+    @Inject
+    ExceptionMapper exceptionMapper;
 
     @Override
     public Response getPresignedDownloadUrl(PresignedUrlRequestDTOV1 requestDTOV1) {
@@ -88,4 +94,10 @@ public class FileStorageRestControllerV1 implements FileStorageV1Api {
     public Response getMetadataForFiles(List<FileMetadataRequestDTOV1> metadataRequests) {
         return Response.ok(s3APIService.getMetadataForFiles(metadataRequests)).build();
     }
+
+    @ServerExceptionMapper
+    public Response restException(ClientWebApplicationException ex) {
+        return exceptionMapper.clientException(ex);
+    }
+
 }

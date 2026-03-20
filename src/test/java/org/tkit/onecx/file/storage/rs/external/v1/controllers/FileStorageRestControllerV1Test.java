@@ -217,7 +217,7 @@ class FileStorageRestControllerV1Test extends AbstractTest {
                 .when()
                 .post("/v1/file-storage/file/metadata")
                 .then()
-                .statusCode(500);
+                .statusCode(400);
     }
 
     @Test
