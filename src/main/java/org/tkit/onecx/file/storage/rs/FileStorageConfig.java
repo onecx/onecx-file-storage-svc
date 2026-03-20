@@ -23,13 +23,6 @@ public interface FileStorageConfig {
     String bucket();
 
     /**
-     * Default tenant id to be used when tenant id is not provided in the request context
-     */
-    @WithName("default-tenant-id")
-    @WithDefault("default")
-    String defaultTenantId();
-
-    /**
      * S3 client configuration
      */
     @WithName("s3-client")

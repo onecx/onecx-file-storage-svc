@@ -4,6 +4,7 @@ import static io.restassured.RestAssured.given;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.hamcrest.Matchers.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import jakarta.ws.rs.core.MediaType;
@@ -33,6 +34,22 @@ class FileStorageRestControllerV1Test extends AbstractTest {
 
     @Test
     void uploadAndDownloadFileTest() {
+
+        // no magic bytes, should be detected as "application/octet-stream"
+        byte[] fileContentfallback = "onecx file content".getBytes(StandardCharsets.UTF_8);
+
+        given()
+                .auth().oauth2(token)
+                .header(APM_HEADER_PARAM, idToken)
+                .multiPart("applicationId", "app1")
+                .multiPart("productName", "product1")
+                .multiPart("fileName", "my-file-2.txt")
+                .multiPart("file", "my-file-2.txt", fileContentfallback, null)
+                .when()
+                .post("/v1/file-storage/file/upload")
+                .then()
+                .statusCode(201);
+
         // Minimal PNG magic bytes - URLConnection.guessContentTypeFromStream detects this as "image/png"
         byte[] fileContent = new byte[] {
                 (byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A // PNG signature

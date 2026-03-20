@@ -38,9 +38,6 @@ public class S3APIService {
     @ConfigProperty(name = "onecx.file.storage.bucket")
     private String bucketName;
 
-    @ConfigProperty(name = "onecx.file.storage.default-tenant-id")
-    private String defaultTenantId;
-
     @Inject
     S3Client s3Client;
 
@@ -61,7 +58,7 @@ public class S3APIService {
     }
 
     public PresignedUrlResponseDTOV1 getPresignedDownloadUrl(String fileId, String productName, String applicationId) {
-        var tenantId = ApplicationContext.get().hasTenantId() ? ApplicationContext.get().getTenantId() : defaultTenantId;
+        var tenantId = ApplicationContext.get().getTenantId();
         var filePath = buildFilePath(tenantId, productName, applicationId, fileId);
 
         GetObjectRequest objectRequest = GetObjectRequest.builder()
@@ -80,7 +77,7 @@ public class S3APIService {
     }
 
     public PresignedUrlResponseDTOV1 getPresignedUploadUrl(String id, String productName, String applicationId) {
-        var tenantId = ApplicationContext.get().hasTenantId() ? ApplicationContext.get().getTenantId() : defaultTenantId;
+        var tenantId = ApplicationContext.get().getTenantId();
         var filePath = buildFilePath(tenantId, productName, applicationId, id);
 
         PutObjectRequest objectRequest = PutObjectRequest.builder()
@@ -110,7 +107,7 @@ public class S3APIService {
     }
 
     public void uploadFile(String fileId, InputStream data, String productName, String applicationId) throws Exception {
-        var tenantId = ApplicationContext.get().hasTenantId() ? ApplicationContext.get().getTenantId() : defaultTenantId;
+        var tenantId = ApplicationContext.get().getTenantId();
         var filePath = buildFilePath(tenantId, productName, applicationId, fileId);
 
         BufferedInputStream buffered = new BufferedInputStream(data);
@@ -131,7 +128,7 @@ public class S3APIService {
     }
 
     public ResponseInputStream<GetObjectResponse> downloadFile(String fileId, String productName, String applicationId) {
-        var tenantId = ApplicationContext.get().hasTenantId() ? ApplicationContext.get().getTenantId() : defaultTenantId;
+        var tenantId = ApplicationContext.get().getTenantId();
         var filePath = buildFilePath(tenantId, productName, applicationId, fileId);
 
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
@@ -143,7 +140,7 @@ public class S3APIService {
     }
 
     public List<FileMetadataResponseDTOV1> getMetadataForFiles(final List<FileMetadataRequestDTOV1> metadataRequests) {
-        final var tenantId = ApplicationContext.get().hasTenantId() ? ApplicationContext.get().getTenantId() : defaultTenantId;
+        var tenantId = ApplicationContext.get().getTenantId();
         return metadataRequests.stream()
                 .map(request -> processHeadObject(tenantId, request))
                 .toList();
@@ -154,7 +151,7 @@ public class S3APIService {
     }
 
     public void deleteFile(String fileId, String productName, String applicationId) {
-        var tenantId = ApplicationContext.get().hasTenantId() ? ApplicationContext.get().getTenantId() : defaultTenantId;
+        var tenantId = ApplicationContext.get().getTenantId();
         var filePath = buildFilePath(tenantId, productName, applicationId, fileId);
 
         try {

@@ -28,27 +28,6 @@ endif::add-copy-button-to-env-var[]
 |string
 |`+++onecx+++`
 
-a| [[onecx-file-storage-svc_onecx-file-storage-default-tenant-id]] [.property-path]##link:#onecx-file-storage-svc_onecx-file-storage-default-tenant-id[`onecx.file.storage.default-tenant-id`]##
-ifdef::add-copy-button-to-config-props[]
-config_property_copy_button:+++onecx.file.storage.default-tenant-id+++[]
-endif::add-copy-button-to-config-props[]
-
-
-[.description]
---
-Default tenant id to be used when tenant id is not provided in the request context
-
-
-ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++ONECX_FILE_STORAGE_DEFAULT_TENANT_ID+++[]
-endif::add-copy-button-to-env-var[]
-ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++ONECX_FILE_STORAGE_DEFAULT_TENANT_ID+++`
-endif::add-copy-button-to-env-var[]
---
-|string
-|`+++default+++`
-
 a| [[onecx-file-storage-svc_onecx-file-storage-s3-client-endpoint]] [.property-path]##link:#onecx-file-storage-svc_onecx-file-storage-s3-client-endpoint[`onecx.file.storage.s3-client.endpoint`]##
 ifdef::add-copy-button-to-config-props[]
 config_property_copy_button:+++onecx.file.storage.s3-client.endpoint+++[]
