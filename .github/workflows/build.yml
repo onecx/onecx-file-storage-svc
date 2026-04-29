@@ -10,8 +10,7 @@ on:
 
 jobs:
   build:
-    uses: onecx/ci-quarkus/.github/workflows/build.yml@v1
-    secrets: inherit
+    uses: onecx/ci-quarkus/.github/workflows/build.yml@v2
     with:
       native: true    
       helmEventTargetRepository: onecx/onecx-file-storage
