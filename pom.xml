@@ -6,11 +6,12 @@
     <parent>
         <groupId>org.tkit.onecx</groupId>
         <artifactId>onecx-quarkus3-parent</artifactId>
-        <version>2.5.0</version>
+        <version>3.1.0</version>
     </parent>
 
     <artifactId>onecx-file-storage-svc</artifactId>
     <version>999-SNAPSHOT</version>
+    <packaging>quarkus</packaging>
 
     <dependencies>
         <dependency>
@@ -92,18 +93,13 @@
 
         <!-- TEST -->
         <dependency>
-            <groupId>io.swagger.parser.v3</groupId>
-            <artifactId>swagger-parser</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-test-keycloak-server</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-junit5-mockito</artifactId>
+            <artifactId>quarkus-junit-mockito</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -7,7 +7,7 @@ h|[.header-title]##Configuration property##
 h|Type
 h|Default
 
-a| [[onecx-file-storage-svc_onecx-file-storage-bucket]] [.property-path]##link:#onecx-file-storage-svc_onecx-file-storage-bucket[`onecx.file.storage.bucket`]##
+a| [[onecx-file-storage-svc_onecx-file-storage-bucket]] [.property-path]##link:#onecx-file-storage-svc_onecx-file-storage-bucket[`+++onecx.file.storage.bucket+++`]##
 ifdef::add-copy-button-to-config-props[]
 config_property_copy_button:+++onecx.file.storage.bucket+++[]
 endif::add-copy-button-to-config-props[]
@@ -28,7 +28,7 @@ endif::add-copy-button-to-env-var[]
 |string
 |`+++onecx+++`
 
-a| [[onecx-file-storage-svc_onecx-file-storage-s3-client-endpoint]] [.property-path]##link:#onecx-file-storage-svc_onecx-file-storage-s3-client-endpoint[`onecx.file.storage.s3-client.endpoint`]##
+a| [[onecx-file-storage-svc_onecx-file-storage-s3-client-endpoint]] [.property-path]##link:#onecx-file-storage-svc_onecx-file-storage-s3-client-endpoint[`+++onecx.file.storage.s3-client.endpoint+++`]##
 ifdef::add-copy-button-to-config-props[]
 config_property_copy_button:+++onecx.file.storage.s3-client.endpoint+++[]
 endif::add-copy-button-to-config-props[]
@@ -49,7 +49,7 @@ endif::add-copy-button-to-env-var[]
 |string
 |required icon:exclamation-circle[title=Configuration property is required]
 
-a| [[onecx-file-storage-svc_onecx-file-storage-s3-client-region]] [.property-path]##link:#onecx-file-storage-svc_onecx-file-storage-s3-client-region[`onecx.file.storage.s3-client.region`]##
+a| [[onecx-file-storage-svc_onecx-file-storage-s3-client-region]] [.property-path]##link:#onecx-file-storage-svc_onecx-file-storage-s3-client-region[`+++onecx.file.storage.s3-client.region+++`]##
 ifdef::add-copy-button-to-config-props[]
 config_property_copy_button:+++onecx.file.storage.s3-client.region+++[]
 endif::add-copy-button-to-config-props[]
@@ -70,7 +70,7 @@ endif::add-copy-button-to-env-var[]
 |string
 |required icon:exclamation-circle[title=Configuration property is required]
 
-a| [[onecx-file-storage-svc_onecx-file-storage-s3-client-access-key-id]] [.property-path]##link:#onecx-file-storage-svc_onecx-file-storage-s3-client-access-key-id[`onecx.file.storage.s3-client.access-key-id`]##
+a| [[onecx-file-storage-svc_onecx-file-storage-s3-client-access-key-id]] [.property-path]##link:#onecx-file-storage-svc_onecx-file-storage-s3-client-access-key-id[`+++onecx.file.storage.s3-client.access-key-id+++`]##
 ifdef::add-copy-button-to-config-props[]
 config_property_copy_button:+++onecx.file.storage.s3-client.access-key-id+++[]
 endif::add-copy-button-to-config-props[]
@@ -91,7 +91,7 @@ endif::add-copy-button-to-env-var[]
 |string
 |required icon:exclamation-circle[title=Configuration property is required]
 
-a| [[onecx-file-storage-svc_onecx-file-storage-s3-client-secret-access-key]] [.property-path]##link:#onecx-file-storage-svc_onecx-file-storage-s3-client-secret-access-key[`onecx.file.storage.s3-client.secret-access-key`]##
+a| [[onecx-file-storage-svc_onecx-file-storage-s3-client-secret-access-key]] [.property-path]##link:#onecx-file-storage-svc_onecx-file-storage-s3-client-secret-access-key[`+++onecx.file.storage.s3-client.secret-access-key+++`]##
 ifdef::add-copy-button-to-config-props[]
 config_property_copy_button:+++onecx.file.storage.s3-client.secret-access-key+++[]
 endif::add-copy-button-to-config-props[]
