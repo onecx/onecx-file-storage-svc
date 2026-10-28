@@ -1,6 +1,6 @@
 package org.tkit.onecx.file.storage.rs.external.v1.controllers;
 
-import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.List;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -10,6 +10,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
 import org.jboss.resteasy.reactive.ClientWebApplicationException;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
 import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
 import org.tkit.onecx.file.storage.rs.external.v1.mappers.ExceptionMapper;
 import org.tkit.onecx.file.storage.rs.external.v1.services.S3APIService;
@@ -48,9 +49,10 @@ public class FileStorageRestControllerV1 implements FileStorageV1Api {
     }
 
     @Override
-    public Response uploadFile(String applicationId, String productName, String fileId, InputStream file) {
+    public Response uploadFile(String applicationId, String productName, String fileId, FileUpload file) {
         try {
-            s3APIService.uploadFile(fileId, file, productName, applicationId);
+            byte[] bytes = Files.readAllBytes(file.uploadedFile());
+            s3APIService.uploadFile(fileId, bytes, productName, applicationId);
             return Response.status(Response.Status.CREATED).build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
