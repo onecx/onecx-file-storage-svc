@@ -47,9 +47,16 @@ app:
   db:
     enabled: true
   operator:
+    keycloak:
+      client:
+        enabled: true
+        spec:
+          kcConfig:
+            defaultClientScopes: [ ocx-tn:read ]
     microservice:
       spec:
         description: OneCX File Storage Backend Service
         name: OneCX File Storage SVC
+
 
 ----

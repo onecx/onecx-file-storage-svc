@@ -1,7 +1,6 @@
 package org.tkit.onecx.file.storage.rs.external.v1.services;
 
-import java.io.BufferedInputStream;
-import java.io.InputStream;
+import java.io.ByteArrayInputStream;
 import java.net.URLConnection;
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -11,6 +10,7 @@ import java.util.List;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.MediaType;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.resteasy.reactive.ClientWebApplicationException;
@@ -106,25 +106,26 @@ public class S3APIService {
         }
     }
 
-    public void uploadFile(String fileId, InputStream data, String productName, String applicationId) throws Exception {
+    public void uploadFile(String fileId, byte[] data, String productName, String applicationId) throws Exception {
         var tenantId = ApplicationContext.get().getTenantId();
         var filePath = buildFilePath(tenantId, productName, applicationId, fileId);
 
-        BufferedInputStream buffered = new BufferedInputStream(data);
-        String contentType = URLConnection.guessContentTypeFromStream(buffered);
-        if (contentType == null) {
-            contentType = "application/octet-stream";
+        var contentType = MediaType.APPLICATION_OCTET_STREAM;
+        try (var buffered = new ByteArrayInputStream(data)) {
+            var tmp = URLConnection.guessContentTypeFromStream(buffered);
+            if (tmp != null) {
+                contentType = tmp;
+            }
         }
-        byte[] bytes = buffered.readAllBytes();
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(filePath)
                 .contentType(contentType)
-                .contentLength((long) bytes.length)
+                .contentLength((long) data.length)
                 .build();
 
-        s3Client.putObject(putObjectRequest, RequestBody.fromBytes(bytes));
+        s3Client.putObject(putObjectRequest, RequestBody.fromBytes(data));
     }
 
     public ResponseInputStream<GetObjectResponse> downloadFile(String fileId, String productName, String applicationId) {
